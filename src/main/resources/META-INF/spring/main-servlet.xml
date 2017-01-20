@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/osgi
+        http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!--<osgi:service ref="blueprintServlet"-->
+                  <!--interface="javax.servlet.http.HttpServlet">-->
+        <!--<osgi:service-properties>-->
+            <!--<entry key="alias" value="/blueprint"/>-->
+        <!--</osgi:service-properties>-->
+    <!--</osgi:service>-->
+
+    <context:component-scan base-package="mx.nhtzr.osgiee.web"/>
+    <context:annotation-config/>
+    <mvc:annotation-driven/>
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basename="messages"/>
+
+</beans>
