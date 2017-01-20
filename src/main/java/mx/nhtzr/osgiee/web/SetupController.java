@@ -13,10 +13,9 @@ package mx.nhtzr.osgiee.web;
 import mx.nhtzr.osgiee.web.internal.Configurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +25,8 @@ public class SetupController {
     @Autowired
     private SetupService setupService;
 
-    @RequestMapping(value = "/setup", method = RequestMethod.GET)
-    @ResponseBody
+    @Path("/setup")
+    @GET
     public Map<String, Object> main() {
         final Map<String, Object> model = new HashMap<>();
         try (Configurator cfg = Configurator.create()) {
