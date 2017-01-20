@@ -22,10 +22,6 @@ public class WelcomeController {
 
     private static final Log logger = LogFactory.getLog(WelcomeController.class);
 
-    public WelcomeController() {
-        logger.info("Holy shit it really is reading from that weird folder");
-    }
-
     @GET
     @Path("/")
     public String main() {
