@@ -13,8 +13,9 @@ package mx.nhtzr.osgiee.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 @Controller
 public class WelcomeController {
@@ -25,8 +26,8 @@ public class WelcomeController {
         logger.info("Holy shit it really is reading from that weird folder");
     }
 
-    @RequestMapping("/")
-    @ResponseBody
+    @GET
+    @Path("/")
     public String main() {
         return "Holi";
     }
