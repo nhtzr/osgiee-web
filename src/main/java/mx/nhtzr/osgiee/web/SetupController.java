@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class SetupController {
 
     @Path("/setup")
     @GET
+    @Produces("application/json")
     public Map<String, Object> main() {
         final Map<String, Object> model = new HashMap<>();
         try (Configurator cfg = Configurator.create()) {
