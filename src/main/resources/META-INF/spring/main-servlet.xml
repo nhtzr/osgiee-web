@@ -22,6 +22,7 @@
             <ref bean="welcomeController"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
+            <ref bean="myFilter"/>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider" />
         </jaxrs:providers>
     </jaxrs:server>
