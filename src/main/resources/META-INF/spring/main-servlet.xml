@@ -16,6 +16,7 @@
     <osgix:cm-properties id="config" persistent-id="bundle.properties"/>
 
     <context:component-scan base-package="mx.nhtzr.osgiee.web"/>
+    <context:annotation-config/>
     <jaxrs:server address="/bundle">
         <jaxrs:serviceBeans>
             <ref bean="welcomeController"/>
