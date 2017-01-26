@@ -12,18 +12,33 @@ package mx.nhtzr.osgiee.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.stereotype.Controller;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.IOException;
 
 @Controller
+@Path("/")
 public class WelcomeController {
 
     private static final Log logger = LogFactory.getLog(WelcomeController.class);
+    private ObjectWriter writer = new ObjectMapper().writerWithDefaultPrettyPrinter();
+
+    @POST
+    @Consumes(value = MediaType.APPLICATION_FORM_URLENCODED)
+    public String postHandler(MultivaluedMap<String, String> params ) throws IOException {
+        logger.info("params = " + writer.writeValueAsString(params));
+        return params.getFirst("body");
+    }
 
     @GET
-    @Path("/")
     public String main() {
         return "Holi";
     }
