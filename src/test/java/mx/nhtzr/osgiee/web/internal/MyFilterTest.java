@@ -7,6 +7,7 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.AfterClass;
@@ -93,7 +94,7 @@ public class MyFilterTest {
 
         server = new Server();
         localConnector = new LocalConnector(server);
-//        final serverConnector localConnector = new ServerConnector(server);
+//        final ServerConnector serverConnector = new ServerConnector(server);
 //        serverConnector.setPort(8080);
         server.setConnectors(new Connector[]{
                 localConnector
