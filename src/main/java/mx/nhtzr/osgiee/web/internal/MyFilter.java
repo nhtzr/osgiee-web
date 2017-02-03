@@ -28,7 +28,7 @@ public class MyFilter implements ContainerRequestFilter, ContainerResponseFilter
         System.out.println("pre context.getUriInfo().getQueryParameters() = " + objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters()));
         context.setRequestUri(context
                 .getUriInfo()
-                .getAbsolutePathBuilder()
+                .getRequestUriBuilder()
                 .queryParam("token", "tokenValue")
                 .build());
         System.out.println("context.getUriInfo().getPath() = " + context.getUriInfo().getPath());
