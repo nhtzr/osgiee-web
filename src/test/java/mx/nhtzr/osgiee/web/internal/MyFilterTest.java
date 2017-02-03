@@ -63,7 +63,7 @@ public class MyFilterTest {
     }
 
     @Test
-    public void testNormalGet() throws Exception {
+    public void test() throws Exception {
         String response;
         response = localConnector.getResponse(request);
         Assert.assertThat(response, containsString(STATUS_OK));
