@@ -26,12 +26,15 @@ public class SetupController {
     @Autowired
     private SetupService setupService;
 
+    @Autowired
+    Configurator cfg;
+
     @Path("/setup")
     @GET
     @Produces("application/json")
     public Map<String, Object> main() {
         final Map<String, Object> model = new HashMap<>();
-        try (Configurator cfg = Configurator.create()) {
+        if (cfg.isAvailable()) {
             model.put("command", cfg.getDatabaseSettings());
         }
         model.put("jdbcDrivers", setupService.getJdbcDrivers());

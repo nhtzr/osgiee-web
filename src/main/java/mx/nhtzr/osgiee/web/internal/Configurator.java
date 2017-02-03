@@ -7,39 +7,29 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.ServiceTracker;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 
-public class Configurator implements AutoCloseable {
+@Service
+public class Configurator {
     private static final String GEMINI_FACTORY_PID = "gemini.jpa.punit";
 
-    private final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> tracker;
+    @Autowired(required = false)
+    private ConfigurationAdmin configurationAdmin;
 
-    public Configurator(final BundleContext context) {
-        this.tracker = new ServiceTracker<>(context, ConfigurationAdmin.class, null);
-        this.tracker.open();
-    }
-
-    public static Configurator create() {
-        return new Configurator(FrameworkUtil.getBundle(Configurator.class).getBundleContext());
-    }
-
-    @Override
-    public void close() {
-        this.tracker.close();
-    }
 
     public SetupData getDatabaseSettings() {
-        final ConfigurationAdmin cm = this.tracker.getService();
-        if (cm == null) {
+        if (!isAvailable()) {
             return null;
         }
 
         try {
-            final Configuration[] cfgs = cm.listConfigurations(String.format("(%s=%s)", "service.factoryPid", GEMINI_FACTORY_PID));
+            final Configuration[] cfgs = configurationAdmin.listConfigurations(String.format("(%s=%s)", "service.factoryPid", GEMINI_FACTORY_PID));
             if (cfgs == null || cfgs.length <= 0) {
                 return new SetupData();
             }
@@ -75,13 +65,12 @@ public class Configurator implements AutoCloseable {
     }
 
     public void setDatabaseSettings(final SetupData data) {
-        final ConfigurationAdmin cm = this.tracker.getService();
-        if (cm == null) {
+        if (isAvailable()) {
             throw new IllegalStateException(String.format("Configuration Admin not found"));
         }
 
         try {
-            final Configuration[] result = cm.listConfigurations(String.format("(%s=%s)", "service.factoryPid", GEMINI_FACTORY_PID));
+            final Configuration[] result = configurationAdmin.listConfigurations(String.format("(%s=%s)", "service.factoryPid", GEMINI_FACTORY_PID));
             // delete old
             if (result != null) {
                 for (final Configuration cfg : result) {
@@ -89,7 +78,7 @@ public class Configurator implements AutoCloseable {
                 }
             }
 
-            final Configuration cfg = cm.createFactoryConfiguration(GEMINI_FACTORY_PID, null);
+            final Configuration cfg = configurationAdmin.createFactoryConfiguration(GEMINI_FACTORY_PID, null);
 
             final Dictionary<String, Object> props = new Hashtable<>();
 
@@ -121,4 +110,9 @@ public class Configurator implements AutoCloseable {
 
         return null;
     }
+
+    public boolean isAvailable() {
+        return configurationAdmin != null;
+    }
+
 }
