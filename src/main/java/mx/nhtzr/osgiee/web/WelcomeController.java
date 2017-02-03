@@ -25,7 +25,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
 @Controller
-@Path("/")
 public class WelcomeController {
 
     private static final Log logger = LogFactory.getLog(WelcomeController.class);
