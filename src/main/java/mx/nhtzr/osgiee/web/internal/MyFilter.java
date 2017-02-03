@@ -25,12 +25,14 @@ public class MyFilter implements ContainerRequestFilter, ContainerResponseFilter
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
         log.info("request = " + json(context));
+        System.out.println("pre context.getUriInfo().getQueryParameters() = " + objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters()));
         context.setRequestUri(context
                 .getUriInfo()
                 .getAbsolutePathBuilder()
                 .queryParam("token", "tokenValue")
                 .build());
         System.out.println("context.getUriInfo().getPath() = " + context.getUriInfo().getPath());
+        System.out.println("context.getUriInfo().getQueryParameters() = " + objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters()));
     }
 
     @Override
