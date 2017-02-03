@@ -39,6 +39,12 @@ public class WelcomeController {
 
     @GET
     public String main() {
-        return "Holi";
+        return "main()";
+    }
+
+    @GET
+    @Path("/sub")
+    public String sub() {
+        return "sub()";
     }
 }
