@@ -15,7 +15,7 @@
         http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
     <osgix:cm-properties id="config" persistent-id="bundle.properties"/>
-    <osgi:reference interface="org.osgi.service.cm.ConfigurationAdmin"/>
+    <osgi:reference id="org.apache.felix.cm.ConfigurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
 
     <context:component-scan base-package="mx.nhtzr.osgiee.web"/>
     <context:annotation-config/>
