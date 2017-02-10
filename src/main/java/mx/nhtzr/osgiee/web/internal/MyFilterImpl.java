@@ -1,5 +1,6 @@
 package mx.nhtzr.osgiee.web.internal;
 
+import mx.nhtzr.osgiee.web.MyFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -7,7 +8,9 @@ import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.*;
+import javax.ws.rs.core.Context;
 import java.io.IOException;
 
 /**
@@ -15,12 +18,14 @@ import java.io.IOException;
  */
 @Component("myFilter")
 @PreMatching
-public class MyFilter implements ContainerRequestFilter, ContainerResponseFilter {
+public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFilter, MyFilter {
 
-    private static final Log log = LogFactory.getLog(MyFilter.class);
+    private static final Log log = LogFactory.getLog(MyFilterImpl.class);
     private final ObjectWriter objectWriter = new ObjectMapper()
             .disable(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS)
             .writerWithDefaultPrettyPrinter();
+
+    private HttpServletRequest request;
 
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
@@ -36,6 +41,12 @@ public class MyFilter implements ContainerRequestFilter, ContainerResponseFilter
         System.out.println("context.getUriInfo().getPath() = " + context.getUriInfo().getPath());
         System.out.println("pre context.getUriInfo().getQueryParameters() = " + preQueryParams);
         System.out.println("context.getUriInfo().getQueryParameters() = " + objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters()));
+        try {
+            System.out.println("request.getMethod() = " + request.getMethod());
+        } catch (Exception e) {
+            System.out.println("e = ");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -45,6 +56,17 @@ public class MyFilter implements ContainerRequestFilter, ContainerResponseFilter
 
     private String json(Object o) throws IOException {
         return objectWriter.writeValueAsString(o);
+    }
+
+    @Override
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    @Context
+    @Override
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
     }
 
 }

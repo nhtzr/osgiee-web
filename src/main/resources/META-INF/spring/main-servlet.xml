@@ -16,6 +16,8 @@
 
     <osgix:cm-properties id="config" persistent-id="bundle.properties"/>
     <osgi:reference id="org.apache.felix.cm.ConfigurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+    <osgi:service ref="myFilter"
+                  interface="mx.nhtzr.osgiee.web.MyFilter" />
 
     <context:component-scan base-package="mx.nhtzr.osgiee.web"/>
     <context:annotation-config/>

@@ -1,13 +1,11 @@
 package mx.nhtzr.osgiee.web.internal;
 
 import mx.nhtzr.osgiee.web.WelcomeController;
-import mx.nhtzr.osgiee.web.internal.MyFilter;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.LocalConnector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.AfterClass;
@@ -79,7 +77,7 @@ public class MyFilterTest {
                 super.loadBus(sc);
                 final JAXRSServerFactoryBean bean = new JAXRSServerFactoryBean();
                 bean.setServiceBean(new WelcomeController());
-                bean.setProvider(new MyFilter());
+                bean.setProvider(new MyFilterImpl());
                 bean.setBus(getBus());
                 bean.setAddress("/");
                 bean.create();
