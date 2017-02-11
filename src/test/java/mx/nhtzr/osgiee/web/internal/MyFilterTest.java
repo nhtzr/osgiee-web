@@ -1,5 +1,6 @@
 package mx.nhtzr.osgiee.web.internal;
 
+import mx.nhtzr.osgiee.web.MyFilter;
 import mx.nhtzr.osgiee.web.WelcomeController;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
@@ -12,19 +13,15 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import javax.servlet.ServletConfig;
-import java.util.Collection;
+import java.lang.reflect.Proxy;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.containsString;
 
 /**
  * Created by hero on 2/2/2017.
  */
-@RunWith(Parameterized.class)
 public class MyFilterTest {
 
     public static final String STATUS_OK = "200 OK";
@@ -34,39 +31,24 @@ public class MyFilterTest {
     private static LocalConnector localConnector;
     private static Server server;
 
-    @Parameterized.Parameter(value = 0)
-    public String request;
-    @Parameterized.Parameter(value = 1)
-    public String expectedResponse;
-
-    @Parameterized.Parameters
-    public static Collection<String[]> parameters() {
-        return asList(
-                new String[]{"GET /?myQueryParam=myQueryParamValue HTTP/1.1\n" +
-                        "Host: localhost:8080\n" +
-                        "User-Agent: curl/7.44.0\n" +
-                        "Accept: */*\n\n\n", APPLICATION_SLASH_RESPONSE},
-
-                new String[]{"GET / HTTP/1.1\n" +
-                        "Host: localhost:8080\n" +
-                        "User-Agent: curl/7.44.0\n" +
-                        "Accept: */*\n\n\n", APPLICATION_SLASH_RESPONSE},
-                new String[]{"GET /sub HTTP/1.1\n" +
-                        "Host: localhost:8080\n" +
-                        "User-Agent: curl/7.44.0\n" +
-                        "Accept: */*\n\n\n", APPLICATION_NON_SLASH_RESPONSE},
-                new String[]{"GET /sub?myQueryParam=myQueryParamValue HTTP/1.1\n" +
-                        "Host: localhost:8080\n" +
-                        "User-Agent: curl/7.44.0\n" +
-                        "Accept: */*\n\n\n", APPLICATION_NON_SLASH_RESPONSE});
-    }
 
     @Test
     public void test() throws Exception {
         String response;
-        response = localConnector.getResponse(request);
+        response = localConnector.getResponse("GET /2 HTTP/1.1\n" +
+                "Host: localhost:8080\n" +
+                "User-Agent: curl/7.44.0\n" +
+                "Accept: */*\n\n\n");
         Assert.assertThat(response, containsString(STATUS_OK));
-        Assert.assertThat(response, containsString(expectedResponse));
+        Assert.assertThat(response, containsString(APPLICATION_SLASH_RESPONSE));
+
+        response = localConnector.getResponse("GET / HTTP/1.1\n" +
+                "Host: localhost:8080\n" +
+                "User-Agent: curl/7.44.0\n" +
+                "Accept: */*\n\n\n");
+        Assert.assertThat(response, containsString(STATUS_OK));
+        Assert.assertThat(response, containsString(APPLICATION_SLASH_RESPONSE));
+
     }
 
     @BeforeClass
@@ -75,11 +57,25 @@ public class MyFilterTest {
             @Override
             protected void loadBus(ServletConfig sc) {
                 super.loadBus(sc);
-                final JAXRSServerFactoryBean bean = new JAXRSServerFactoryBean();
+                final MyFilterImpl provider = new MyFilterImpl();
+                final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                final Class[] interfaces = {MyFilter.class};
+                final Object proxyProvider = Proxy.newProxyInstance(loader, interfaces,
+                        (proxy, method, args) -> method.invoke(provider, args));
+
+                JAXRSServerFactoryBean bean;
+                bean = new JAXRSServerFactoryBean();
                 bean.setServiceBean(new WelcomeController());
-                bean.setProvider(new MyFilterImpl());
+                bean.setProvider(provider);
                 bean.setBus(getBus());
                 bean.setAddress("/");
+                bean.create();
+
+                bean = new JAXRSServerFactoryBean();
+                bean.setServiceBean(new WelcomeController());
+                bean.setProvider(proxyProvider);
+                bean.setBus(getBus());
+                bean.setAddress("/2");
                 bean.create();
             }
         };

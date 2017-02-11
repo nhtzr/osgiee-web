@@ -29,36 +29,18 @@ public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFi
 
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
-        log.info("request = " + json(context));
-        final String prePath = context.getUriInfo().getPath();
-        final String preQueryParams = objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters());
-        context.setRequestUri(context
-                .getUriInfo()
-                .getRequestUriBuilder()
-                .queryParam("token", "tokenValue")
-                .build());
-        System.out.println("pre context.getUriInfo().getPath() = " + prePath);
-        System.out.println("context.getUriInfo().getPath() = " + context.getUriInfo().getPath());
-        System.out.println("pre context.getUriInfo().getQueryParameters() = " + preQueryParams);
-        System.out.println("context.getUriInfo().getQueryParameters() = " + objectWriter.writeValueAsString(context.getUriInfo().getQueryParameters()));
-        try {
-            System.out.println("request.getMethod() = " + request.getMethod());
-        } catch (Exception e) {
-            System.out.println("e = ");
-            e.printStackTrace();
-        }
+        System.out.println("request.toString() = " + request.toString());
+        System.out.println("request.getMethod() = " + request.getMethod());
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
-        log.info("response = " + json(responseContext));
     }
 
     private String json(Object o) throws IOException {
         return objectWriter.writeValueAsString(o);
     }
 
-    @Override
     public HttpServletRequest getRequest() {
         return request;
     }
