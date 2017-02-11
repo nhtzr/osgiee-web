@@ -12,6 +12,8 @@ import java.io.IOException;
 public interface MyFilter extends ContainerRequestFilter, ContainerResponseFilter {
 
 
+    HttpServletRequest getRequest();
+
     @Context
     void setRequest(HttpServletRequest request);
 

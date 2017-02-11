@@ -35,13 +35,6 @@ public class MyFilterTest {
     @Test
     public void test() throws Exception {
         String response;
-        response = localConnector.getResponse("GET /2 HTTP/1.1\n" +
-                "Host: localhost:8080\n" +
-                "User-Agent: curl/7.44.0\n" +
-                "Accept: */*\n\n\n");
-        Assert.assertThat(response, containsString(STATUS_OK));
-        Assert.assertThat(response, containsString(APPLICATION_SLASH_RESPONSE));
-
         response = localConnector.getResponse("GET / HTTP/1.1\n" +
                 "Host: localhost:8080\n" +
                 "User-Agent: curl/7.44.0\n" +
@@ -62,6 +55,7 @@ public class MyFilterTest {
                 final Class[] interfaces = {MyFilter.class};
                 final Object proxyProvider = Proxy.newProxyInstance(loader, interfaces,
                         (proxy, method, args) -> method.invoke(provider, args));
+                // This is meant to implement a provider obtained by OSGI
 
                 JAXRSServerFactoryBean bean;
                 bean = new JAXRSServerFactoryBean();

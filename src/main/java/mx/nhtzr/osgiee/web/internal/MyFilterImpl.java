@@ -41,6 +41,7 @@ public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFi
         return objectWriter.writeValueAsString(o);
     }
 
+    @Override
     public HttpServletRequest getRequest() {
         return request;
     }
