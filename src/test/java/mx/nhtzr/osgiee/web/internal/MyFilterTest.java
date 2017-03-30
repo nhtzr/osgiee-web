@@ -3,6 +3,7 @@ package mx.nhtzr.osgiee.web.internal;
 import mx.nhtzr.osgiee.web.MyFilter;
 import mx.nhtzr.osgiee.web.WelcomeController;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.jaxrs.impl.tl.ThreadLocalHttpServletRequest;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.LocalConnector;
@@ -15,6 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -26,14 +29,18 @@ public class MyFilterTest {
 
     public static final String STATUS_OK = "200 OK";
     public static final String APPLICATION_SLASH_RESPONSE = "main()";
-    public static final String APPLICATION_NON_SLASH_RESPONSE = "sub()";
 
     private static LocalConnector localConnector;
     private static Server server;
+    private static UpdateableFilterProxy handler = new UpdateableFilterProxy();
 
 
     @Test
     public void test() throws Exception {
+        final MyFilterImpl reloadedFilter = new MyFilterImpl(); // Filter is reloaded by OSGI
+        reloadedFilter.setRequest(new ThreadLocalHttpServletRequest()); // New instance receives a new ThreadLocal
+        handler.set(reloadedFilter); // This is updated on the fly by OSGI
+
         String response;
         response = localConnector.getResponse("GET / HTTP/1.1\n" +
                 "Host: localhost:8080\n" +
@@ -41,7 +48,6 @@ public class MyFilterTest {
                 "Accept: */*\n\n\n");
         Assert.assertThat(response, containsString(STATUS_OK));
         Assert.assertThat(response, containsString(APPLICATION_SLASH_RESPONSE));
-
     }
 
     @BeforeClass
@@ -53,23 +59,16 @@ public class MyFilterTest {
                 final MyFilterImpl provider = new MyFilterImpl();
                 final ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 final Class[] interfaces = {MyFilter.class};
-                final Object proxyProvider = Proxy.newProxyInstance(loader, interfaces,
-                        (proxy, method, args) -> method.invoke(provider, args));
+                final Object proxyProvider = Proxy.newProxyInstance(loader, interfaces, handler.set(provider));
                 // This is meant to implement a provider obtained by OSGI
+                // OSGI can update implementation on the fly in case a bundle hot deploys
 
                 JAXRSServerFactoryBean bean;
                 bean = new JAXRSServerFactoryBean();
                 bean.setServiceBean(new WelcomeController());
-                bean.setProvider(provider);
-                bean.setBus(getBus());
-                bean.setAddress("/");
-                bean.create();
-
-                bean = new JAXRSServerFactoryBean();
-                bean.setServiceBean(new WelcomeController());
                 bean.setProvider(proxyProvider);
                 bean.setBus(getBus());
-                bean.setAddress("/2");
+                bean.setAddress("/");
                 bean.create();
             }
         };
@@ -100,4 +99,19 @@ public class MyFilterTest {
         server.destroy();
     }
 
+    private static class UpdateableFilterProxy implements InvocationHandler {
+
+        private MyFilterImpl provider;
+
+        public UpdateableFilterProxy set(MyFilterImpl provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            return method.invoke(provider, args);
+        }
+
+    }
 }

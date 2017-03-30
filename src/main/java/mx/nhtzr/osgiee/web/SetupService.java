@@ -20,7 +20,7 @@ import static java.util.Comparator.comparing;
 @Component
 public class SetupService {
 
-    @Autowired
+    @Autowired(required = false)
     private BundleContext context;
 
     public List<JdbcDriverInformation> getJdbcDrivers() {
