@@ -3,38 +3,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
-       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-4.1.xsd
-        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-        http://www.springframework.org/schema/osgi-compendium
-        http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
-
-    <osgix:cm-properties id="config" persistent-id="bundle.properties"/>
-    <osgi:reference id="org.apache.felix.cm.ConfigurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
-    <osgi:service ref="myFilter"
-                  interface="mx.nhtzr.osgiee.web.MyFilter" />
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <context:component-scan base-package="mx.nhtzr.osgiee.web"/>
     <context:annotation-config/>
     <jaxrs:server address="/bundle">
         <jaxrs:serviceBeans>
-            <ref bean="welcomeController"/>
+            <value type="java.lang.Class">mx.nhtzr.osgiee.web.MyFilterImpl</value>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="myFilter"/>
-            <bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider" />
-        </jaxrs:providers>
-    </jaxrs:server>
-    <jaxrs:server address="/setupController">
-        <jaxrs:serviceBeans>
-            <ref bean="setupController"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider" />
         </jaxrs:providers>
     </jaxrs:server>

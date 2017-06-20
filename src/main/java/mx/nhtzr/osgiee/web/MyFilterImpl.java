@@ -1,6 +1,5 @@
-package mx.nhtzr.osgiee.web.internal;
+package mx.nhtzr.osgiee.web;
 
-import mx.nhtzr.osgiee.web.MyFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.*;
-import javax.ws.rs.core.Context;
 import java.io.IOException;
 
 /**
@@ -18,14 +16,18 @@ import java.io.IOException;
  */
 @Component("myFilter")
 @PreMatching
-public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFilter, MyFilter {
+public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFilter {
 
     private static final Log log = LogFactory.getLog(MyFilterImpl.class);
-    private final ObjectWriter objectWriter = new ObjectMapper()
+    private static final ObjectWriter objectWriter = new ObjectMapper()
             .disable(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS)
             .writerWithDefaultPrettyPrinter();
 
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
+
+    public MyFilterImpl (HttpServletRequest request) {
+        this.request = request;
+    }
 
     @Override
     public void filter(ContainerRequestContext context) throws IOException {
@@ -39,17 +41,6 @@ public class MyFilterImpl implements ContainerRequestFilter, ContainerResponseFi
 
     private String json(Object o) throws IOException {
         return objectWriter.writeValueAsString(o);
-    }
-
-    @Override
-    public HttpServletRequest getRequest() {
-        return request;
-    }
-
-    @Context
-    @Override
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
     }
 
 }
